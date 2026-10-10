@@ -1,6 +1,6 @@
 # Collin Equity Check
 
-**Live site:** https://YOUR-USERNAME.github.io/collin-equity-check/
+**Live site:** https://samuelgeevarughese.github.io/collin-equity-check
 
 **Is your home appraised higher than your neighbors'?** A free tool for Collin County, Texas homeowners that compares any home's appraisal with its closest comparable homes and builds the evidence for an "unequal appraisal" protest. It also includes an analysis of 465,000 protest records to see what actually wins.
 
