@@ -1,0 +1,504 @@
+<title>Collin Equity Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column like a county notice — search slip on top, the finding as a ruled "notice" panel, evidence table, then the county-wide analysis. */
+:root{
+  --paper:#f5f7f4; --sheet:#ffffff; --ink:#17231f; --ink-2:#4a5a54; --rule:#d5ddd8; --rule-2:#e8eee9;
+  --accent:#1d6b55; --accent-soft:#e2efe9; --over:#a3560f; --over-soft:#fbeedd; --under:#2f5f8f; --under-soft:#e4edf6;
+  --display:"Bitter", Georgia, "Times New Roman", serif;
+  --body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111816; --sheet:#18211e; --ink:#e4ebe7; --ink-2:#a3b2ac; --rule:#2f3c37; --rule-2:#232e2a;
+  --accent:#5fc3a1; --accent-soft:#1b332b; --over:#f0a65c; --over-soft:#3a2914; --under:#8fb8e3; --under-soft:#1c2a3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111816; --sheet:#18211e; --ink:#e4ebe7; --ink-2:#a3b2ac; --rule:#2f3c37; --rule-2:#232e2a;
+  --accent:#5fc3a1; --accent-soft:#1b332b; --over:#f0a65c; --over-soft:#3a2914; --under:#8fb8e3; --under-soft:#1c2a3a; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4.4vw,40px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:22px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+p{margin:0;max-width:68ch}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono)}
+.muted{color:var(--ink-2)}
+a{color:var(--accent)}
+header.top{display:grid;gap:10px}
+header.top .lede{font-size:17px;color:var(--ink-2)}
+/* search slip */
+.slip{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:18px;display:grid;gap:12px}
+.slip-row{display:grid;grid-template-columns:200px 1fr;gap:10px}
+@media (max-width:600px){.slip-row{grid-template-columns:1fr}}
+label.f{display:grid;gap:4px;font-size:12.5px;font-weight:600;color:var(--ink-2);min-width:0}
+select,input[type=text],input[type=number]{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:10px 12px;width:100%;box-sizing:border-box}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ac{position:relative;min-width:0}
+.ac ul{position:absolute;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--sheet);border:1px solid var(--rule);border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:5;max-height:320px;overflow:auto}
+.ac li{padding:8px 10px;border-radius:3px;cursor:pointer;display:flex;justify-content:space-between;gap:12px}
+.ac li[aria-selected=true],.ac li:hover{background:var(--accent-soft)}
+.ac li small{color:var(--ink-2);white-space:nowrap}
+.status{font-size:13px;color:var(--ink-2);min-height:1.4em}
+/* notice panel */
+.notice{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.notice-head{padding:18px 20px;border-bottom:1px solid var(--rule);display:grid;gap:6px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:3px;background:var(--rule-2);color:var(--ink-2);justify-self:start}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--ink-2)}
+.facts b{color:var(--ink);font-weight:600}
+.verdict{padding:16px 20px;display:grid;gap:4px;border-bottom:1px solid var(--rule)}
+.verdict.over{background:var(--over-soft)} .verdict.over h2{color:var(--over)}
+.verdict.under{background:var(--under-soft)} .verdict.under h2{color:var(--under)}
+.verdict.even{background:var(--accent-soft)} .verdict.even h2{color:var(--accent)}
+.figs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid var(--rule)}
+.fig{padding:14px 20px;display:grid;gap:2px;border-right:1px solid var(--rule-2);min-width:0}
+.fig:last-child{border-right:0}
+.fig .v{font-family:var(--display);font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.fig .k{font-size:12.5px;color:var(--ink-2)}
+@media (max-width:720px){.figs{grid-template-columns:repeat(2,minmax(0,1fr))}.fig:nth-child(2){border-right:0}.fig:nth-child(-n+2){border-bottom:1px solid var(--rule-2)}}
+.rate{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-2);flex-wrap:wrap}
+.rate input{width:76px;padding:4px 6px;font-size:14px}
+.section{padding:18px 20px;display:grid;gap:12px;border-bottom:1px solid var(--rule)}
+.section:last-child{border-bottom:0}
+.strip svg{width:100%;height:auto;display:block}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--rule-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-size:11.5px;font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--rule)}
+th:first-child,td:first-child{text-align:left}
+tr.subj td{font-weight:700;background:var(--rule-2)}
+.btn{font:inherit;font-weight:600;font-size:14px;padding:9px 14px;border-radius:4px;border:1px solid var(--accent);background:var(--accent);color:var(--sheet);cursor:pointer;justify-self:start}
+.btn.ghost{background:transparent;color:var(--accent)}
+pre.evidence{white-space:pre-wrap;font-family:var(--mono);font-size:12.5px;background:var(--paper);border:1px solid var(--rule-2);border-radius:4px;padding:12px;margin:0;max-height:260px;overflow:auto}
+.nb{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.nb div{display:grid;gap:2px}
+.nb .v{font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+.nb .k{font-size:12.5px;color:var(--ink-2)}
+/* analysis */
+.analysis{display:grid;gap:18px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.cards{grid-template-columns:1fr}}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.card svg{width:100%;height:auto;display:block}
+.cap{font-size:13px;color:var(--ink-2)}
+.method{display:grid;gap:10px;font-size:14.5px}
+.method ol{margin:0;padding-left:20px;display:grid;gap:6px;max-width:72ch}
+footer{font-size:12.5px;color:var(--ink-2);border-top:1px solid var(--rule);padding-top:16px;display:grid;gap:6px}
+.skel{padding:28px 20px;color:var(--ink-2)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:600;font-size:14.5px;color:var(--ink-2);background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px 9px;margin-bottom:-1px;cursor:pointer}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button:hover{color:var(--ink)}
+.pane{display:grid;gap:28px}
+[hidden]{display:none!important}
+.filters{display:grid;grid-template-columns:200px 1fr auto;gap:10px;align-items:end}
+@media (max-width:640px){.filters{grid-template-columns:1fr}}
+.chk{display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:600;color:var(--ink-2);padding-bottom:10px;white-space:nowrap}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+table.nx{min-width:820px}
+table.nx th{cursor:pointer;user-select:none}
+table.nx th[aria-sort] {color:var(--ink)}
+table.nx th .ar{font-family:var(--mono);margin-left:3px}
+table.nx tbody tr{cursor:pointer}
+table.nx tbody tr:hover td{background:var(--accent-soft)}
+td .sub{display:block;font-size:12px;color:var(--ink-2);font-weight:400}
+td.nm{white-space:normal;min-width:220px}
+.meter{display:inline-flex;align-items:center;gap:8px;justify-content:flex-end}
+.meter i{display:inline-block;height:8px;width:60px;background:var(--rule-2);position:relative}
+.meter i b{position:absolute;inset:0 auto 0 0;background:var(--over)}
+.pos{color:var(--over)} .neg{color:var(--under)}
+.more{justify-self:center}
+@media (prefers-reduced-motion:no-preference){.notice{animation:rise .35s ease-out}@keyframes rise{from{transform:translateY(4px)}to{transform:none}}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Collin County · 2026 notice values · residential</span>
+    <h1>Is your home appraised higher than your neighbors'?</h1>
+    <p class="lede">Find your house and see how its 2026 appraisal compares with similar homes in the same appraisal neighborhood. This is the "unequal appraisal" argument Texas law lets every owner make at a protest hearing, and it needs no sales data.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="t-home" aria-selected="true" aria-controls="pane-home" type="button">Check a home</button>
+    <button role="tab" id="t-nbhd" aria-selected="false" aria-controls="pane-nbhd" type="button">Compare neighborhoods</button>
+  </nav>
+
+  <div class="pane" id="pane-home" role="tabpanel" aria-labelledby="t-home">
+  <section class="slip" aria-label="Find your home">
+    <div class="slip-row">
+      <label class="f" for="city">City
+        <select id="city"></select>
+      </label>
+      <label class="f" for="q">Street address
+        <div class="ac">
+          <input id="q" type="text" autocomplete="off" placeholder="e.g. 4210 Elm Ridge Dr" role="combobox" aria-expanded="false" aria-controls="sugg">
+          <ul id="sugg" role="listbox" hidden></ul>
+        </div>
+      </label>
+    </div>
+    <div class="status" id="status" aria-live="polite">Loading…</div>
+  </section>
+
+  <article class="notice" id="result"><div class="skel">Loading the example home…</div></article>
+
+  <section class="analysis" aria-labelledby="an-h">
+    <div style="display:grid;gap:6px">
+      <span class="eyebrow">What the protest records show</span>
+      <h2 id="an-h">Does the comparison actually predict protest results?</h2>
+      <p class="muted">Collin CAD publishes the outcome of every protest. I scored every 2026 protested home with this model (using only pre-protest notice values) and compared the score with what the review board actually did.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <h3>Homes the model flags win more often</h3>
+        <div id="ch-val"></div>
+        <p class="cap" id="cap-val"></p>
+      </div>
+      <div class="card">
+        <h3>Owners filing for themselves get bigger cuts</h3>
+        <div id="ch-filer"></div>
+        <p class="cap" id="cap-filer"></p>
+      </div>
+      <div class="card">
+        <h3>Protests are rising, and so are success rates</h3>
+        <div id="ch-year"></div>
+        <p class="cap">Residential protests with a final value recorded, and the share that ended with a lower market value.</p>
+      </div>
+      <div class="card">
+        <h3>Showing up matters</h3>
+        <div id="ch-path"></div>
+        <p class="cap">2026 protests filed by owners, by how they ended. Share ending with a lower value.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="method" aria-labelledby="m-h">
+    <h2 id="m-h">How the comparison works</h2>
+    <ol>
+      <li>Candidates are homes in the same Collin CAD appraisal neighborhood and construction class, with living area within 15% and year built within 8 years. If fewer than 5 qualify, the window widens to 25% and 15 years.</li>
+      <li>The 10 closest matches by size, age and pool are kept. Homes with fewer than 3 matches get no estimate.</li>
+      <li>Each comparable is adjusted to your home: its improvement value per square foot is applied to your living area, plus your own land value.</li>
+      <li>The equity value is the median of those adjusted values. Everything uses 2026 notice (pre-protest) values from the appraisal district.</li>
+    </ol>
+    <p class="muted">Limits: this covers the equity argument only. Texas does not publish sale prices, so it cannot test whether your value is above market. Condition, updates, lot premiums and views are not in the public data, so treat the result as a starting point for your evidence, not a verdict. Not legal or tax advice.</p>
+  </section>
+
+  </div>
+
+  <div class="pane" id="pane-nbhd" role="tabpanel" aria-labelledby="t-nbhd" hidden>
+    <section style="display:grid;gap:8px">
+      <span class="eyebrow">1,500+ appraisal neighborhoods · 2026</span>
+      <h2>Where are appraisals least consistent?</h2>
+      <p class="muted">Comparables come from inside each neighborhood, so this can't say a whole neighborhood is over-appraised. What it can show is how uneven the appraisals are: the share of homes valued 5% or more above their own comparables. The higher that share, the more owners there have a solid equity case.</p>
+    </section>
+    <div class="cards">
+      <div class="card">
+        <h3>Uneven neighborhoods protest less</h3>
+        <div id="ch-q-prate"></div>
+        <p class="cap" id="cap-q"></p>
+      </div>
+      <div class="card">
+        <h3>…but win bigger cuts when they do</h3>
+        <div id="ch-q-cut"></div>
+        <p class="cap">Median cut in market value for successful 2026 protests, by the same neighborhood groups.</p>
+      </div>
+    </div>
+    <section class="slip" aria-label="Filter neighborhoods">
+      <div class="filters">
+        <label class="f" for="nx-city">City<select id="nx-city"></select></label>
+        <label class="f" for="nx-q">Subdivision<input id="nx-q" type="text" autocomplete="off" placeholder="e.g. Stonebridge Ranch"></label>
+        <label class="chk" for="nx-under"><input id="nx-under" type="checkbox"> Under-protested only</label>
+      </div>
+      <div class="status" id="nx-status"></div>
+    </section>
+    <section class="notice">
+      <div class="tbl"><table class="nx"><thead><tr id="nx-head"></tr></thead><tbody id="nx-body"></tbody></table></div>
+      <div class="section" style="justify-items:center"><button class="btn ghost more" id="nx-more" type="button">Show 50 more</button></div>
+    </section>
+    <p class="cap">Neighborhoods with 40+ homes. Value change compares 2026 and 2025 notice values for homes built by 2024. Under-protested means a protest rate below the county median of <span id="nx-medp"></span>. Select a row to look up homes in that city.</p>
+  </div>
+
+  <footer>
+    <div>Data: Collin Central Appraisal District via the <a href="https://data.texas.gov/stories/s/mz7k-urqw" target="_blank" rel="noopener">Texas Open Data Portal</a> — 2026 appraisal roll and ARB protest records, retrieved October 2026.</div>
+    <div>2027 notices typically arrive in April, and the protest deadline is usually May 15 or 30 days after the notice, whichever is later.</div>
+  </footer>
+</div>
+
+<script>
+/*__COMPS__*/
+(function(){
+const $ = s => document.querySelector(s);
+const fmt$ = v => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
+const fmtK = v => "$" + (v >= 1e6 ? (v/1e6).toFixed(2) + "M" : Math.round(v/1000) + "K");
+const pct = (v, d=0) => v == null ? "—" : (v*100).toFixed(d) + "%";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NUM = new Set(["id","c","z","y","f","p","h","l","i","m","t","o"]);
+const EXAMPLE = {shard:"frisco", id:2037296};
+let meta, shards = {}, rows = [], cur = null, subj = null, rate = 2.0, isExample = false;
+try { const r = parseFloat(localStorage.getItem("ec-rate")); if (r > 0 && r < 5) rate = r; } catch(e){}
+
+function parse(text){
+  const lines = text.split("\n"); const cols = lines[0].split(","); const out = [];
+  for (let j=1;j<lines.length;j++){ const L = lines[j]; if(!L) continue; const v = L.split(","); const o = {};
+    for (let k=0;k<cols.length;k++){ const c = cols[k]; o[c] = NUM.has(c) ? +v[k] : c === "e" ? (v[k] === "" ? null : +v[k]) : v[k]; }
+    out.push(o); }
+  return out;
+}
+async function loadShard(key){
+  if (shards[key]) return shards[key];
+  const c = meta.cities.find(x => x.key === key);
+  $("#status").textContent = `Loading ${c.homes.toLocaleString()} ${c.label} homes (${(c.bytes/1e6).toFixed(1)} MB)…`;
+  const res = await fetch(`data/${key}.csv`); if (!res.ok) throw new Error("load " + key);
+  shards[key] = parse(await res.text());
+  return shards[key];
+}
+async function useCity(key){
+  try { rows = await loadShard(key); cur = key;
+    const c = meta.cities.find(x => x.key === key);
+    $("#status").textContent = `${c.homes.toLocaleString()} homes in ${c.label}. Start typing a street number or name.`;
+  } catch(e){ $("#status").textContent = "That city's data didn't load. Check your connection and pick the city again."; }
+}
+
+/* ---------- search ---------- */
+let sugg = [], sel = -1;
+function search(q){
+  q = q.trim().toUpperCase().replace(/\s+/g," "); if (q.length < 2) return [];
+  const starts = [], has = [];
+  for (const r of rows){ if (!r.o) continue; const a = r.a;
+    if (a.startsWith(q)) { starts.push(r); if (starts.length >= 8) break; }
+    else if (has.length < 8 && a.includes(q)) has.push(r); }
+  return starts.concat(has).slice(0, 8);
+}
+function showSugg(){
+  const ul = $("#sugg");
+  if (!sugg.length){ ul.hidden = true; $("#q").setAttribute("aria-expanded","false"); return; }
+  ul.innerHTML = sugg.map((r,i) => `<li role="option" id="s${i}" aria-selected="${i===sel}" data-i="${i}"><span>${esc(r.a)}</span><small>${esc(meta.cityNames[r.c])} ${r.z}</small></li>`).join("");
+  ul.hidden = false; $("#q").setAttribute("aria-expanded","true");
+}
+$("#q").addEventListener("input", e => { sel = -1; sugg = search(e.target.value); showSugg();
+  if (e.target.value.trim().length >= 2 && !sugg.length) $("#status").textContent = "No match yet. Try just the house number and street name, without Dr/Ln/St."; });
+$("#q").addEventListener("keydown", e => {
+  if (e.key === "ArrowDown"){ sel = Math.min(sel+1, sugg.length-1); showSugg(); e.preventDefault(); }
+  else if (e.key === "ArrowUp"){ sel = Math.max(sel-1, 0); showSugg(); e.preventDefault(); }
+  else if (e.key === "Enter" && sugg.length){ pick(sugg[Math.max(sel,0)]); e.preventDefault(); }
+  else if (e.key === "Escape"){ sugg = []; showSugg(); }
+});
+$("#sugg").addEventListener("mousedown", e => { const li = e.target.closest("li"); if (li){ e.preventDefault(); pick(sugg[+li.dataset.i]); } });
+$("#q").addEventListener("blur", () => setTimeout(() => { sugg = []; showSugg(); }, 120));
+function pick(r){ sugg = []; showSugg(); $("#q").value = r.a; isExample = false; render(r); }
+
+/* ---------- result ---------- */
+function render(r){
+  subj = r;
+  const { comps, indicated } = Comps.findComps(rows, r);
+  const nb = meta.nbhd[r.n] || ["", 0, 0, null, null];
+  const city = meta.cityNames[r.c];
+  const head = `<div class="notice-head">
+      ${isExample ? '<span class="tag">Example home · search above for yours</span>' : '<span class="tag">2026 notice of appraised value</span>'}
+      <h2>${esc(r.a)}, ${esc(city)} ${r.z}</h2>
+      <div class="facts"><span>Subdivision <b>${esc(nb[0] || "—")}</b></span><span>Neighborhood <b class="mono">${esc(r.n)}</b></span><span>Built <b>${r.y}</b></span><span>Living area <b class="num">${r.f.toLocaleString()} sq ft</b></span><span>Class <b class="mono">${esc(r.k)}</b></span><span>Pool <b>${r.p ? "Yes" : "No"}</b></span><span>Homestead <b>${r.h ? "Yes" : "No"}</b></span><span>Property ID <b class="mono">${r.id}</b></span></div>
+    </div>`;
+  if (indicated == null){
+    $("#result").innerHTML = head + `<div class="verdict even"><h2>Not enough similar homes</h2><p>Fewer than 3 homes in this neighborhood match on size, age and class, so there's no reliable comparison. This is common for custom homes and very new subdivisions.</p></div>`;
+    return;
+  }
+  const gap = r.m - indicated, gp = gap / indicated;
+  const kind = gp > 0.02 ? "over" : gp < -0.02 ? "under" : "even";
+  const title = kind === "over" ? `Appraised ${pct(gp,1)} above comparable homes`
+    : kind === "under" ? `Appraised ${pct(-gp,1)} below comparable homes` : "In line with comparable homes";
+  const sub = kind === "over" ? "An unequal-appraisal protest has a reasonable basis. The 10 homes below are your starting evidence."
+    : kind === "under" ? "An equity protest is unlikely to help. A market-value protest would need sales evidence, such as recent sales or a recent appraisal."
+    : "The equity argument alone won't move your value much. Condition issues or a market-value argument would carry more weight.";
+  const capped = r.h && r.t < r.m;
+  const save = Math.max(0, r.t - indicated) * rate / 100;
+  const nbLine = nb[2] ? `<div class="nb"><div><span class="v">${nb[2].toLocaleString()}</span><span class="k">of ${nb[1].toLocaleString()} homes protested in 2026</span></div><div><span class="v">${pct(nb[3])}</span><span class="k">ended with a lower value</span></div><div><span class="v">${nb[4] ? pct(nb[4],1) : "—"}</span><span class="k">typical cut when lowered</span></div></div>`
+    : `<p class="muted">No 2026 protests recorded in this neighborhood.</p>`;
+  $("#result").innerHTML = head + `
+    <div class="verdict ${kind}"><h2>${title}</h2><p>${sub}</p></div>
+    <div class="figs">
+      <div class="fig"><span class="k">2026 notice market value</span><span class="v">${fmt$(r.m)}</span></div>
+      <div class="fig"><span class="k">Equity value from comparables</span><span class="v">${fmt$(indicated)}</span></div>
+      <div class="fig"><span class="k">Difference</span><span class="v">${gap >= 0 ? "+" : "−"}${fmt$(Math.abs(gap))}</span></div>
+      <div class="fig"><span class="k">Est. yearly tax savings</span><span class="v">${fmt$(save)}</span>
+        <label class="rate" for="rate">at <input id="rate" type="number" step="0.05" min="0.5" max="4" value="${rate}">% tax rate</label></div>
+    </div>
+    ${capped ? `<div class="section"><p class="cap">Your homestead cap already limits taxable value to <b>${fmt$(r.t)}</b>. Only the part of a reduction that goes below that number lowers this year's bill, but a lower market value also lowers the base for next year's cap.</p></div>` : ""}
+    <div class="section strip"><h3>Where your value sits among the comparables</h3>${strip(r, comps, indicated)}</div>
+    <div class="section"><h3>Comparable homes</h3>
+      <div class="tbl"><table><thead><tr><th>Address</th><th>Built</th><th>Sq ft</th><th>Pool</th><th>Impr. $/sq ft</th><th>Notice value</th><th>Adjusted to yours</th></tr></thead><tbody>
+      <tr class="subj"><td>${esc(r.a)} (yours)</td><td>${r.y}</td><td>${r.f.toLocaleString()}</td><td>${r.p ? "Yes":"—"}</td><td>$${(r.i/r.f).toFixed(2)}</td><td>${fmt$(r.m)}</td><td>${fmt$(r.m)}</td></tr>
+      ${comps.map(c => `<tr><td>${esc(c.a)}</td><td>${c.y}</td><td>${c.f.toLocaleString()}</td><td>${c.p ? "Yes":"—"}</td><td>$${c.psf.toFixed(2)}</td><td>${fmt$(c.m)}</td><td>${fmt$(c.adjusted)}</td></tr>`).join("")}
+      </tbody></table></div>
+      <p class="cap">Adjusted to yours = your land value + the comparable's improvement value per sq ft × your ${r.f.toLocaleString()} sq ft. Median: ${fmt$(indicated)}.</p>
+    </div>
+    <div class="section"><h3>Protests in your neighborhood</h3>${nbLine}</div>
+    <div class="section"><h3>Evidence summary</h3>
+      <pre class="evidence" id="ev">${esc(evidence(r, comps, indicated, city, nb))}</pre>
+      <button class="btn" id="copy" type="button">Copy evidence summary</button>
+    </div>`;
+  $("#rate").addEventListener("change", e => { const v = parseFloat(e.target.value); if (v > 0 && v < 5){ rate = v; try{localStorage.setItem("ec-rate", v)}catch(_){}; render(subj); } });
+  $("#copy").addEventListener("click", () => {
+    const t = $("#ev").textContent, b = $("#copy");
+    navigator.clipboard.writeText(t).then(() => { b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy evidence summary", 1600); })
+      .catch(() => { const s = window.getSelection(), rg = document.createRange(); rg.selectNodeContents($("#ev")); s.removeAllRanges(); s.addRange(rg); b.textContent = "Selected — press Ctrl/Cmd+C"; });
+  });
+}
+
+function evidence(r, comps, ind, city, nb){
+  const L = [];
+  L.push(`UNEQUAL APPRAISAL EVIDENCE — Tax Code §41.43(b)(3)`);
+  L.push(`Property: ${r.a}, ${city} TX ${r.z}  (Collin CAD ID ${r.id})`);
+  L.push(`Neighborhood ${r.n} — ${nb[0]}`);
+  L.push(`Subject: built ${r.y}, ${r.f.toLocaleString()} sq ft, class ${r.k}, pool ${r.p ? "yes" : "no"}`);
+  L.push(`2026 notice market value: ${fmt$(r.m)}  (improvements ${fmt$(r.i)} = $${(r.i/r.f).toFixed(2)}/sq ft; land ${fmt$(r.l)})`);
+  L.push("");
+  L.push(`Comparable properties (same neighborhood and class), adjusted for living area:`);
+  comps.forEach((c,i) => L.push(`${String(i+1).padStart(2)}. ${c.a.padEnd(24)} ID ${c.id}  ${c.y}  ${String(c.f).padStart(5)} sf  $${c.psf.toFixed(2)}/sf  notice ${fmt$(c.m)}  adjusted ${fmt$(c.adjusted)}`));
+  L.push("");
+  L.push(`Median adjusted value of comparables: ${fmt$(ind)}`);
+  L.push(`Requested value: ${fmt$(ind)}  (${pct((r.m-ind)/ind,1)} below the noticed value)`);
+  L.push(`Source: Collin CAD 2026 appraisal roll (notice values), Texas Open Data Portal.`);
+  return L.join("\n");
+}
+
+function strip(r, comps, ind){
+  const vals = comps.map(c => c.adjusted).concat([r.m, ind]);
+  let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi-lo)*0.08 || hi*0.05; lo -= pad; hi += pad;
+  const W = 720, H = 120, L = 24, R = 24, y = 58, x = v => L + (v-lo)/(hi-lo)*(W-L-R);
+  const myY = Math.abs(x(r.m)-x(ind)) < 110 ? y-40 : y-22;
+  const ticks = []; const step = niceStep((hi-lo)/4);
+  for (let t = Math.ceil(lo/step)*step; t <= hi; t += step) ticks.push(t);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Comparable adjusted values compared with your notice value">
+    <line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--rule)" stroke-width="1"/>
+    ${ticks.map(t => `<line x1="${x(t)}" x2="${x(t)}" y1="${y+16}" y2="${y+20}" stroke="var(--rule)"/><text x="${x(t)}" y="${y+34}" text-anchor="middle" font-size="11" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace">${fmtK(t)}</text>`).join("")}
+    ${comps.map(c => `<circle cx="${x(c.adjusted)}" cy="${y}" r="6" fill="var(--accent)" fill-opacity=".45" stroke="var(--accent)"><title>${esc(c.a)}: ${fmt$(c.adjusted)}</title></circle>`).join("")}
+    <line x1="${x(ind)}" x2="${x(ind)}" y1="${y-16}" y2="${y+12}" stroke="var(--accent)" stroke-width="2"/>
+    <text x="${x(ind)}" y="${y-22}" text-anchor="${anchor(x(ind),W)}" font-size="12" fill="var(--accent)" font-weight="600">Median ${fmtK(ind)}</text>
+    <path d="M ${x(r.m)} ${y-9} l 8 9 l -8 9 l -8 -9 z" fill="var(--over)"/>
+    <text x="${x(r.m)}" y="${myY}" text-anchor="${anchor(x(r.m),W)}" font-size="12" fill="var(--over)" font-weight="600">Your notice ${fmtK(r.m)}</text>
+  </svg>`;
+}
+const anchor = (px, W) => px < 90 ? "start" : px > W-90 ? "end" : "middle";
+function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))); const n = raw/p; return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * p; }
+
+/* ---------- analysis charts ---------- */
+function bars(items, opts){
+  // items: [{label, value, note}] values 0..1 ; horizontal bars
+  const W = 440, rowH = 34, L = opts.labelW || 150, R = 56, H = items.length*rowH + 8;
+  const max = opts.max || 1, x = v => (v/max)*(W-L-R);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria)}">
+    ${items.map((d,i) => { const yy = i*rowH + 6; return `
+      <text x="${L-8}" y="${yy+15}" text-anchor="end" font-size="12" fill="var(--ink)">${esc(d.label)}</text>
+      ${d.sub ? `<text x="${L-8}" y="${yy+28}" text-anchor="end" font-size="10.5" fill="var(--ink-2)">${esc(d.sub)}</text>` : ""}
+      <rect x="${L}" y="${yy+4}" width="${W-L-R}" height="16" fill="var(--rule-2)"/>
+      <rect x="${L}" y="${yy+4}" width="${Math.max(1,x(d.value))}" height="16" fill="${d.hl ? "var(--over)" : "var(--accent)"}"/>
+      <text x="${L+x(d.value)+6}" y="${yy+16.5}" font-size="12" font-weight="600" fill="var(--ink)" font-family="IBM Plex Mono, monospace">${opts.fmt(d.value)}</text>`; }).join("")}
+  </svg>`;
+}
+function analysis(){
+  const S = meta.summary, v = S.validation;
+  $("#ch-val").innerHTML = bars(v.bands.map(b => ({label: b.band.replace("Under","Below").replace("Over","Above"), sub: `n=${b.n.toLocaleString()} · cut ${pct(b.median_cut,1)}`, value: b.reduced, hl: b.band.startsWith("Over 5") || b.band.startsWith("Over 10")})),
+    {fmt: v => pct(v), aria: "Share of protests that won a reduction, by model gap", labelW: 150});
+  $("#cap-val").textContent = `Share of 2026 protests that ended with a lower value, grouped by how far the notice value sat from the model's equity value (${v.rows.toLocaleString()} protests). Homes flagged 5%+ above comparables won ${pct(v.bands[3].reduced)} of the time vs ${pct(v.bands[0].reduced)} for homes already below. The model explains direction, not size: rank correlation with the cut is ${v.spearman.toFixed(2)}.`;
+  const f = Object.fromEntries(S.by_filer.map(d => [d.filer, d]));
+  $("#ch-filer").innerHTML = bars([
+    {label:"Owner", sub:`${f.Owner.protests.toLocaleString()} protests`, value:f.Owner.median_cut_if_reduced, hl:true},
+    {label:"Tax agent", sub:`${f.Agent.protests.toLocaleString()} protests`, value:f.Agent.median_cut_if_reduced}],
+    {fmt: v => pct(v,1), max: 0.045, aria: "Median value cut when reduced, owner vs agent", labelW: 110});
+  $("#cap-filer").textContent = `Median cut in market value when a 2026 protest succeeded. Success rates are similar (${pct(f.Owner.reduced)} for owners, ${pct(f.Agent.reduced)} for agents), but agents typically keep 25–50% of the savings as their fee.`;
+  $("#ch-year").innerHTML = bars(S.by_year.map(d => ({label: String(d.year), sub: `${d.protests.toLocaleString()} protests`, value: d.reduced, hl: d.year === 2026})),
+    {fmt: v => pct(v), aria: "Protest success rate by year", labelW: 110});
+  const P = Object.fromEntries(S.owner_paths.map(d => [d.protstatusdescr, d]));
+  const hearing = ["Change to the Appraisal Roll by ARB","No Change to the Appraisal Roll by ARB"].map(k => P[k]).filter(Boolean);
+  const hn = hearing.reduce((a,d) => a+d.n, 0), hr = hearing.reduce((a,d) => a+d.n*d.reduced, 0)/hn;
+  const paths = [
+    {label:"Took online offer", sub:`${P["e-File Settlement And Waiver"].n.toLocaleString()} owners`, value:P["e-File Settlement And Waiver"].reduced},
+    {label:"Went to a hearing", sub:`${hn.toLocaleString()} owners`, value:hr},
+    {label:"Didn't show up", sub:`${P["Did Not Appear - Dismissed"].n.toLocaleString()} owners`, value:P["Did Not Appear - Dismissed"].reduced, hl:true},
+    {label:"Withdrew online", sub:`${P["e-File Withdrawn Online"].n.toLocaleString()} owners`, value:P["e-File Withdrawn Online"].reduced, hl:true}];
+  $("#ch-path").innerHTML = bars(paths, {fmt: v => pct(v), aria: "Owner protest outcomes by path", labelW: 140});
+}
+
+/* ---------- neighborhood explorer ---------- */
+const NX_COLS = [
+  {k:"name", label:"Subdivision", get:d => d.sub, cls:"nm"},
+  {k:"homes", label:"Homes", get:d => d.homes},
+  {k:"val", label:"Median value", get:d => d.val},
+  {k:"chg", label:"Change vs 2025", get:d => d.chg},
+  {k:"over5", label:"5%+ above comps", get:d => d.over5},
+  {k:"prate", label:"Protested", get:d => d.prate},
+  {k:"won", label:"Won", get:d => d.won},
+  {k:"cut", label:"Typical cut", get:d => d.cut},
+];
+let NX = [], nxSort = {k:"over5", dir:-1}, nxShown = 50;
+function nxInit(){
+  NX = meta.nbx.map(r => ({code:r[0], city:r[1], sub:r[2] || r[0], homes:r[3], val:r[4], chg:r[5], over5:r[6], prate:r[7], won:r[8], cut:r[9], yb:r[10]}));
+  const cities = [...new Set(NX.map(d => d.city))].sort();
+  $("#nx-city").innerHTML = `<option value="">All cities</option>` + cities.map(c => `<option>${esc(c)}</option>`).join("");
+  $("#nx-medp").textContent = pct(meta.summary.nbhd_median_prate);
+  const Q = meta.summary.nbhd_quartiles, names = ["Most even","Fairly even","Fairly uneven","Most uneven"];
+  const sub = (q) => `${pct(q.over5)} of homes 5%+ high`;
+  $("#ch-q-prate").innerHTML = bars(Q.map((q,i) => ({label:names[i], sub:sub(q), value:q.prate, hl:i===3})), {fmt:v => pct(v), max:0.4, aria:"Protest rate by neighborhood consistency", labelW:140});
+  $("#ch-q-cut").innerHTML = bars(Q.map((q,i) => ({label:names[i], sub:sub(q), value:q.cut, hl:i===3})), {fmt:v => pct(v,1), max:0.03, aria:"Typical cut by neighborhood consistency", labelW:140});
+  $("#cap-q").textContent = `Share of homes that protested in 2026. Neighborhoods are split into four equal groups (about ${Q[0].n} each) by how many homes sit 5%+ above their comparables. Success rates are similar across groups (${pct(Math.min(...Q.map(q=>q.reduced)))}–${pct(Math.max(...Q.map(q=>q.reduced)))}).`;
+  ["nx-city","nx-q","nx-under"].forEach(id => $("#"+id).addEventListener(id === "nx-q" ? "input" : "change", () => { nxShown = 50; nxRender(); }));
+  $("#nx-more").addEventListener("click", () => { nxShown += 50; nxRender(); });
+  $("#nx-body").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr) nxOpen(tr.dataset.city); });
+  $("#nx-body").addEventListener("keydown", e => { if (e.key === "Enter"){ const tr = e.target.closest("tr"); if (tr) nxOpen(tr.dataset.city); } });
+  nxRender();
+}
+function nxRender(){
+  const city = $("#nx-city").value, q = $("#nx-q").value.trim().toLowerCase(), under = $("#nx-under").checked, mp = meta.summary.nbhd_median_prate;
+  let list = NX.filter(d => (!city || d.city === city) && (!q || d.sub.toLowerCase().includes(q) || d.code.toLowerCase().includes(q)) && (!under || d.prate < mp));
+  const col = NX_COLS.find(c => c.k === nxSort.k);
+  list.sort((a,b) => { const x = col.get(a), y = col.get(b);
+    if (x == null) return 1; if (y == null) return -1;
+    return (typeof x === "string" ? x.localeCompare(y) : x - y) * nxSort.dir; });
+  $("#nx-head").innerHTML = NX_COLS.map(c => `<th scope="col" data-k="${c.k}" tabindex="0" ${c.k === nxSort.k ? `aria-sort="${nxSort.dir > 0 ? "ascending" : "descending"}"` : ""}>${c.label}${c.k === nxSort.k ? `<span class="ar">${nxSort.dir > 0 ? "↑" : "↓"}</span>` : ""}</th>`).join("");
+  $("#nx-head").querySelectorAll("th").forEach(th => { const go = () => { const k = th.dataset.k; nxSort = {k, dir: nxSort.k === k ? -nxSort.dir : (k === "name" ? 1 : -1)}; nxRender(); };
+    th.addEventListener("click", go); th.addEventListener("keydown", e => { if (e.key === "Enter") go(); }); });
+  const maxO = 0.4;
+  $("#nx-body").innerHTML = list.slice(0, nxShown).map(d => `<tr tabindex="0" data-city="${esc(d.city)}">
+    <td class="nm">${esc(d.sub)}<span class="sub">${esc(d.city)} · <span class="mono">${esc(d.code)}</span> · built ~${d.yb}</span></td>
+    <td>${d.homes.toLocaleString()}</td><td>${fmtK(d.val)}</td>
+    <td class="${d.chg > 0 ? "pos" : d.chg < 0 ? "neg" : ""}">${d.chg == null ? "—" : (d.chg > 0 ? "+" : "") + pct(d.chg,1)}</td>
+    <td><span class="meter">${pct(d.over5)}<i><b style="width:${Math.min(100, d.over5/maxO*100)}%"></b></i></span></td>
+    <td>${pct(d.prate)}</td><td>${d.won == null ? "—" : pct(d.won)}</td><td>${d.cut == null ? "—" : pct(d.cut,1)}</td></tr>`).join("")
+    || `<tr><td colspan="8" class="muted" style="text-align:left">No neighborhoods match. Clear the subdivision filter or pick another city.</td></tr>`;
+  $("#nx-status").textContent = `${list.length.toLocaleString()} neighborhoods`;
+  $("#nx-more").hidden = list.length <= nxShown;
+}
+async function nxOpen(city){
+  setTab("home");
+  const c = meta.cities.find(x => x.label === city) || (meta.otherTowns.includes(city) ? meta.cities.find(x => x.key === "other-towns") : null);
+  if (c){ $("#city").value = c.key; $("#q").value = ""; await useCity(c.key); }
+  $("#q").focus(); window.scrollTo({top:0, behavior:"smooth"});
+}
+function setTab(t){
+  const home = t === "home";
+  $("#t-home").setAttribute("aria-selected", home); $("#t-nbhd").setAttribute("aria-selected", !home);
+  $("#pane-home").hidden = !home; $("#pane-nbhd").hidden = home;
+  try { history.replaceState(null, "", home ? location.pathname : "#neighborhoods"); } catch(e){}
+}
+$("#t-home").addEventListener("click", () => setTab("home"));
+$("#t-nbhd").addEventListener("click", () => setTab("nbhd"));
+
+/* ---------- boot ---------- */
+async function boot(){
+  try {
+    meta = await (await fetch("data/meta.json")).json();
+  } catch(e){ $("#status").textContent = "The home data didn't load. Refresh the page to try again."; return; }
+  $("#city").innerHTML = meta.cities.map(c => `<option value="${c.key}">${esc(c.label)} (${c.homes.toLocaleString()})</option>`).join("");
+  $("#city").value = EXAMPLE.shard;
+  $("#city").addEventListener("change", e => { $("#q").value = ""; useCity(e.target.value); $("#q").focus(); });
+  analysis(); nxInit();
+  if (location.hash === "#neighborhoods") setTab("nbhd");
+  await useCity(EXAMPLE.shard);
+  const ex = rows.find(r => r.id === EXAMPLE.id);
+  if (ex){ isExample = true; render(ex); }
+}
+boot();
+})();
+</script>
